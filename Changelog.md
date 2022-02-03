@@ -3,6 +3,7 @@
 Language Features:
  * General: Support ``ContractName.functionName`` for ``abi.encodeCall``, in addition to external function pointers.
  * General: Add equality-comparison operators for external function types.
+ * General: Allow annotating inline assembly as memory-safe to allow optimizations and stack limit evasion that rely on respecting Solidity's memory model.
 
 
 Compiler Features:

@@ -162,6 +162,56 @@ bool DocStringTagParser::visit(ErrorDefinition const& _error)
 	return true;
 }
 
+bool DocStringTagParser::visit(InlineAssembly const& _assembly)
+{
+	if (!_assembly.documentation())
+		return true;
+	StructuredDocumentation documentation{-1, _assembly.location(), _assembly.documentation()};
+	ErrorList errors;
+	ErrorReporter errorReporter{errors};
+	auto docTags = DocStringParser{documentation, errorReporter}.parse();
+
+	if (!errors.empty())
+	{
+		SecondarySourceLocation ssl;
+		for (auto const& error: errors)
+			if (error->comment())
+				ssl.append(
+					*error->comment(),
+					error->sourceLocation() ? *error->sourceLocation() : _assembly.location()
+				);
+		m_errorReporter.warning(
+			7828_error,
+			_assembly.location(),
+			"Inline assembly has invalid natspec documentation.",
+			ssl
+		);
+	}
+
+	for (auto const& [tagName, tagValue]: docTags)
+	{
+		if (tagName == "solidity")
+		{
+			if (tagValue.content == "memory-safe-assembly")
+				_assembly.annotation().memorySafe = true;
+			else
+				m_errorReporter.warning(
+					8787_error,
+					_assembly.location(),
+					"Unexpected value for @solidity tag in inline assembly: " + tagValue.content
+				);
+		}
+		else
+			m_errorReporter.warning(
+				6269_error,
+				_assembly.location(),
+				"Unexpected natspec tag in inline assembly: " + tagName
+			);
+	}
+
+	return true;
+}
+
 void DocStringTagParser::checkParameters(
 	CallableDeclaration const& _callable,
 	StructurallyDocumented const& _node,
