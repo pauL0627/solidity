@@ -193,7 +193,7 @@ bool DocStringTagParser::visit(InlineAssembly const& _assembly)
 		if (tagName == "solidity")
 		{
 			if (tagValue.content == "memory-safe-assembly")
-				_assembly.annotation().memorySafe = true;
+				_assembly.annotation().markedMemorySafe = true;
 			else
 				m_errorReporter.warning(
 					8787_error,

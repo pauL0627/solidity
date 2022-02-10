@@ -221,7 +221,9 @@ struct InlineAssemblyAnnotation: StatementAnnotation
 	/// Information generated during analysis phase.
 	std::shared_ptr<yul::AsmAnalysisInfo> analysisInfo;
 	/// True, if the assembly block was annotated to be memory-safe.
-	bool memorySafe = false;
+	bool markedMemorySafe = false;
+	/// True, if the assembly block involves any memory opcode or assigns to variables in memory.
+	bool hasMemoryEffects = false;
 };
 
 struct BlockAnnotation: StatementAnnotation, ScopableAnnotation
