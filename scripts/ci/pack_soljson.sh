@@ -32,3 +32,5 @@ echo "Packing $soljson_js and $soljson_wasm to $output."
 
 echo "Testing $output."
 echo "process.stdout.write(require('$(realpath "${output}")').wasmBinary)" | node | cmp "${soljson_wasm}" && echo "Binaries match."
+# Allow the wasm binary to be garbage collected after compilation.
+echo 'Module["wasmBinary"] = undefined;' >> "${output}"
